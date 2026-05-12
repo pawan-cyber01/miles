@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>MILES — Multipurpose Intelligent Linked Engine System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+  <div class="scanlines"></div>
+  <div class="vignette"></div>
+  <div class="ar-grid"></div>
+
+  <!-- Boot Screen -->
+  <div id="boot-screen">
+    <div class="boot-logo">
+      <div class="boot-arc">
+        <div class="boot-ring r1"></div>
+        <div class="boot-ring r2"></div>
+        <div class="boot-ring r3"></div>
+        <div class="boot-core"></div>
+      </div>
+      <div class="boot-text">
+        <div class="boot-title">MILES</div>
+        <div class="boot-sub">Multipurpose Intelligent Linked Engine System // Pawan's AI</div>
+        <div class="boot-progress-bar"><div id="boot-progress"></div></div>
+        <div id="boot-status">Initializing neural core...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HUD -->
+  <div id="hud" class="hidden">
+    <div class="scanlines"></div>
+
+    <!-- Top Bar -->
+    <header class="top-bar">
+      <div class="top-left">
+        <span class="hud-label clickable-logo pawan-logo" onclick="toggleVoice()" title="Activate Voice Override">MILES</span>
+        <span class="hud-version">v8.0 // BIOMETRIC SECURE AUTHENTICATION</span>
+      </div>
+      <div class="top-center">
+        <div id="clock" class="clock"></div>
+        <div id="date-display" class="date-display"></div>
+      </div>
+
+      <!-- ── Mini Chat Bar (visible only in TOP mode) ── -->
+      <div class="top-chat-bar" id="top-chat-bar">
+        <input id="top-chat-input" class="top-chat-input" placeholder="ASK MILES..." autocomplete="off"
+               onkeydown="if(event.key==='Enter'){event.preventDefault();sendTopChat();}"/>
+        <button class="top-chat-btn" onclick="sendTopChat()" title="Send">⮞</button>
+        <button class="top-chat-btn top-mic-btn-inline" id="top-mic-btn" onclick="toggleVoice()" title="Voice">🎙</button>
+        <button class="top-chat-btn top-expand-btn" onclick="applyMode('full')" title="Full Screen">⛶</button>
+      </div>
+
+      <div class="top-right">
+        <!-- Window Controls -->
+        <button class="win-btn" onclick="setHudMode('hide')" title="Arc Reactor Mode">ARC</button>
+        <button class="win-btn" onclick="setHudMode('top')" title="Slim Always-On-Top Mode">TOP</button>
+        <button class="win-btn" onclick="setHudMode('full')" title="Full Screen">FULL</button>
+        <button class="win-btn" onclick="toggleWhatsappBridge('start')" title="Connect WhatsApp Bridge">WA</button>
+        <button class="win-btn" onclick="showToolTab('settings')" title="Settings">SET</button>
+        
+        <!-- Status Badges -->
+        <span class="badge badge-cyan">AOD</span>
+        <span class="badge badge-green">● NET</span>
+        <span class="badge badge-cyan">● SYS</span>
+        <span class="badge badge-gold">● A.I.</span>
+        <span class="badge badge-green" id="voice-badge">● VOICE</span>
+      </div>
+    </header>
+
+    <div class="corner corner-tl"></div>
+    <div class="corner corner-tr"></div>
+    <div class="corner corner-bl"></div>
+    <div class="corner corner-br"></div>
+
+    <!-- Main Grid -->
+    <main class="hud-grid">
+
+      <!-- LEFT -->
+      <aside class="col-left">
+
+        <div class="panel arc-panel">
+          <div class="panel-header"><span class="dot dot-red"></span> SPIDER CORE</div>
+          <div class="arc-reactor-wrapper">
+            <div class="arc-reactor" onclick="handleArcClick()">
+              <img class="spider-emblem" src="image.png" alt="Spider emblem"/>
+              <div class="spider-pulse"></div>
+            </div>
+            <div class="arc-stats">
+              <div class="arc-stat"><span class="lbl">MODE</span><span class="val" id="arc-output">ONLINE</span></div>
+              <div class="arc-stat"><span class="lbl">STABILITY</span><span class="val green" id="arc-stab">99.8%</span></div>
+              <div class="arc-stat"><span class="lbl">TEMP</span><span class="val" id="arc-temp">37.2°C</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel battery-panel">
+          <div class="panel-header"><span class="dot dot-gold"></span> POWER SYSTEMS</div>
+          <div class="battery-info">
+            <span class="lbl">BATTERY</span>
+            <span class="val" id="battery-pct">--</span>
+            <span class="charging-tag hidden" id="battery-charging">⚡ CHARGING</span>
+          </div>
+          <div class="battery-bar-wrap"><div class="battery-bar" id="battery-bar"></div></div>
+          <div class="mini-stats">
+            <div class="mini-stat"><span class="lbl">MEM</span><span class="val" id="mem-stat">--</span></div>
+            <div class="mini-stat"><span class="lbl">CORES</span><span class="val" id="cpu-cores">--</span></div>
+            <div class="mini-stat"><span class="lbl">NET</span><span class="val" id="net-type">--</span></div>
+            <div class="mini-stat"><span class="lbl">UPTIME</span><span class="val" id="uptime">00:00:00</span></div>
+          </div>
+        </div>
+
+        <div class="panel threat-panel">
+          <div class="panel-header"><span class="dot dot-red"></span> THREAT ASSESSMENT</div>
+          <div class="threat-level">
+            <div class="threat-ring">
+              <svg viewBox="0 0 100 100" class="threat-svg">
+                <circle cx="50" cy="50" r="40" class="threat-bg-circle"/>
+                <circle cx="50" cy="50" r="40" class="threat-fill-circle" id="threat-circle"/>
+              </svg>
+              <div class="threat-label" id="threat-label">LOW</div>
+            </div>
+            <div class="threat-bars">
+              <div class="tbar"><span>BIO</span><div class="tbar-fill" id="bio-bar" style="width:12%"></div></div>
+              <div class="tbar"><span>CYBER</span><div class="tbar-fill" id="cyber-bar" style="width:34%"></div></div>
+              <div class="tbar"><span>PHYS</span><div class="tbar-fill" id="phys-bar" style="width:8%"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel radar-panel">
+          <div class="panel-header"><span class="dot dot-green"></span> RADAR SWEEP</div>
+          <canvas id="radar-canvas" width="200" height="200"></canvas>
+        </div>
+
+      </aside>
+
+      <!-- CENTER -->
+      <section class="col-center">
+
+        <!-- Camera fixed-height with Spider Glitch Logo when offline -->
+        <div class="panel scan-panel">
+          <div class="panel-header">
+            <span class="dot dot-cyan"></span> VISUAL SCAN MODULE
+            <div class="scan-controls">
+              <button id="btn-scan" class="hud-btn" onclick="toggleScan()">◎ SCAN</button>
+              <button id="btn-cam" class="hud-btn" onclick="toggleCamera()">◉ CAM</button>
+              <button id="btn-detect" class="hud-btn" onclick="toggleDetect()">◈ DETECT</button>
+            </div>
+          </div>
+          <div class="camera-container" id="camera-container">
+            <video id="camera-feed" autoplay muted playsinline></video>
+            <canvas id="scan-canvas"></canvas>
+            <div class="scan-frame">
+              <div class="sf-corner sf-tl"></div><div class="sf-corner sf-tr"></div>
+              <div class="sf-corner sf-bl"></div><div class="sf-corner sf-br"></div>
+            </div>
+            <div class="scan-line" id="scan-line"></div>
+            <div class="scan-data-overlay">
+              <div class="sdo-item" id="sdo-faces">FACES: 0</div>
+              <div class="sdo-item" id="sdo-status">STATUS: IDLE</div>
+              <div class="sdo-item" id="sdo-mode">MODE: STANDBY</div>
+            </div>
+            <!-- Spider Glitch Logo shown when camera is offline -->
+            <div class="no-cam-msg" id="no-cam-msg">
+              <div class="spider-glitch-container">
+                <div class="spider-glitch-logo">
+                  <img src="image.png" alt="MILES Spider" class="glitch-img" id="glitch-img-main"/>
+                  <img src="image.png" alt="" class="glitch-img glitch-img-r" id="glitch-img-r" aria-hidden="true"/>
+                  <img src="image.png" alt="" class="glitch-img glitch-img-b" id="glitch-img-b" aria-hidden="true"/>
+                  <div class="glitch-scanline"></div>
+                  <div class="glitch-noise"></div>
+                </div>
+                <div class="glitch-text-wrap">
+                  <div class="glitch-title" data-text="M.I.L.E.S">M.I.L.E.S</div>
+                  <div class="glitch-sub">VISUAL SENSOR // OFFLINE</div>
+                  <div class="glitch-sub">Click ◉ CAM to initialize</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Unified Interface Panel -->
+        <div class="panel chat-panel">
+          <div class="panel-header">
+            <span class="dot dot-gold"></span> MILES MAIN INTERFACE
+            <div class="tool-tabs" style="margin-left: auto; margin-bottom: 0;">
+              <button class="tool-tab active" data-tab="chat" onclick="showToolTab('chat')">CHAT</button>
+              <button class="tool-tab" data-tab="terminal" onclick="showToolTab('terminal')">TERMINAL</button>
+              <button class="tool-tab" data-tab="files" onclick="showToolTab('files')">FILES</button>
+              <button class="tool-tab" data-tab="apps" onclick="showToolTab('apps')">APPS</button>
+              <button class="tool-tab" data-tab="browser" onclick="showToolTab('browser')">BROWSER</button>
+              <button class="tool-tab" data-tab="cyber" onclick="showToolTab('cyber')">CYBER</button>
+              <button class="tool-tab" data-tab="settings" onclick="showToolTab('settings')">SETTINGS</button>
+            </div>
+          </div>
+
+          <!-- CHAT PANE -->
+          <div class="tool-pane active" id="tool-chat" style="display: flex; flex-direction: column; flex: 1; min-height: 0;">
+            <div id="chat-messages" class="chat-messages"></div>
+            <div class="chat-input-row">
+              <input id="chat-input" class="chat-input" placeholder="AWAITING DIRECTIVE..." autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();sendChat();}"/>
+              <button class="hud-btn send-btn" onclick="sendChat()" title="Transmit">[ ⮞ ]</button>
+              <!-- FRIEND MODE / CONVERSATION MODE BUTTON -->
+              <button class="hud-btn conv-btn" id="conv-mode-btn" onclick="toggleConversationMode()" title="Friend Mode: Always Listening">
+                <span id="conv-btn-icon">🎙</span> FRIEND
+              </button>
+            </div>
+            <div class="chat-hint">
+              Hinglish ready: "run [cmd]" - "scan [url]" - "search [query]" - "open camera" - "cyber dns example.com" | 🎙 FRIEND for hands-free mode
+            </div>
+          </div>
+
+          <!-- TERMINAL PANE -->
+          <div class="tool-pane tool-pane-split" id="tool-terminal">
+            <div class="tool-side">
+              <div class="cyber-note">Run Windows commands from inside Miles.</div>
+              <div class="tool-input-row">
+                <input id="terminal-input" class="tool-input" placeholder="command / hukm..." onkeydown="if(event.key==='Enter'){event.preventDefault();runTerminalInput();}"/>
+                <button class="hud-btn" onclick="runTerminalInput()">RUN</button>
+              </div>
+              <div class="quick-grid compact">
+                <button class="quick-btn" onclick="runCmd('ipconfig','Network info')">IPCONFIG</button>
+                <button class="quick-btn" onclick="runCmd('tasklist','Processes')">TASKS</button>
+                <button class="quick-btn" onclick="runCmd('wmic logicaldisk get caption,freespace,size','Storage')">DISK</button>
+                <button class="quick-btn" onclick="runCmd('systeminfo','System info')">SYSINFO</button>
+              </div>
+            </div>
+            <div class="mini-terminal tool-output" id="command-terminal"></div>
+          </div>
+
+          <!-- FILES PANE -->
+          <div class="tool-pane tool-pane-split" id="tool-files">
+            <div class="tool-side">
+              <div class="cyber-note">Quick access folders and recent files.</div>
+              <div class="quick-grid compact" id="quick-folder-list">
+                <button class="quick-btn" onclick="openQuickPath('.')">Workspace</button>
+              </div>
+              <button class="hud-btn settings-save" onclick="loadQuickFiles()">REFRESH</button>
+            </div>
+            <div class="file-list tool-output" id="quick-file-list"></div>
+          </div>
+
+          <!-- APPS PANE -->
+          <div class="tool-pane tool-pane-split" id="tool-apps">
+            <div class="tool-side">
+              <div class="cyber-note">Launch tools without leaving Miles.</div>
+            </div>
+            <div class="quick-grid tool-output">
+              <button class="quick-btn" onclick="runCmd('start chrome','Opening Chrome')">Chrome</button>
+              <button class="quick-btn" onclick="runCmd('start notepad','Opening Notepad')">Notepad</button>
+              <button class="quick-btn" onclick="runCmd('start calc','Opening Calculator')">Calc</button>
+              <button class="quick-btn" onclick="runCmd('start cmd','Opening terminal')">CMD</button>
+              <button class="quick-btn" onclick="runCmd('start taskmgr','Opening Task Manager')">Tasks</button>
+              <button class="quick-btn" onclick="runCmd('start explorer','Opening Explorer')">Explorer</button>
+            </div>
+          </div>
+
+          <!-- BROWSER PANE -->
+          <div class="tool-pane tool-pane-split" id="tool-browser">
+            <div class="tool-side">
+              <input id="browser-url" class="tool-input" placeholder="website, e.g. wikipedia.org"/>
+              <textarea id="browser-query" class="tool-input browser-question" placeholder="Ask Miles Browser anything..."></textarea>
+              <button class="hud-btn settings-save" onclick="askMilesBrowser()">ASK</button>
+              <div class="quick-grid compact">
+                <button class="quick-btn" onclick="setBrowserQuery('latest AI news summary')">AI News</button>
+                <button class="quick-btn" onclick="setBrowserQuery('explain this page simply')">Explain Page</button>
+                <button class="quick-btn" onclick="setBrowserQuery('give key points and risks')">Key Points</button>
+                <button class="quick-btn" onclick="setBrowserQuery('find useful details')">Details</button>
+              </div>
+            </div>
+            <div class="browser-result tool-output" id="browser-result">Miles Browser ready.</div>
+          </div>
+
+          <!-- CYBER PANE -->
+          <div class="tool-pane tool-pane-split" id="tool-cyber">
+            <div class="tool-side">
+              <div class="cyber-note">Authorized lab/own targets only. Student mode: recon basics.</div>
+              <input id="cyber-target" class="tool-input full" placeholder="domain or IP, e.g. example.com"/>
+              <div class="quick-grid compact">
+              <button class="quick-btn" onclick="runCyberTask('dns')">DNS</button>
+              <button class="quick-btn" onclick="runCyberTask('ping')">Ping</button>
+              <button class="quick-btn" onclick="runCyberTask('trace')">Trace</button>
+              <button class="quick-btn" onclick="runCyberTask('headers')">Headers</button>
+              </div>
+            </div>
+            <pre class="cyber-output tool-output" id="cyber-output"></pre>
+          </div>
+
+          <!-- SETTINGS PANE -->
+          <div class="tool-pane tool-pane-split" id="tool-settings">
+            <div class="tool-side">
+            <label class="setting-row"><span>Groq API key</span><input id="groq-api-key" class="tool-input" type="password" placeholder="gsk_..."/></label>
+            <label class="setting-row"><span>Groq model</span><input id="groq-model" class="tool-input" placeholder="llama-3.3-70b-versatile"/></label>
+            <label class="setting-row"><span>Ollama model</span><input id="ollama-model" class="tool-input" placeholder="qwen2.5:latest"/></label>
+            <label class="setting-row"><span>AI mode</span><select id="ai-provider" class="tool-input"><option value="groq">Groq online (+ Ollama backup)</option><option value="ollama">Ollama local (+ Groq backup)</option></select></label>
+            </div>
+            <div class="tool-side">
+            <label class="setting-row"><span>Voice Lang</span><select id="voice-lang" class="tool-input"><option value="auto">Auto Hindi/English</option><option value="en">Natural English India</option><option value="hi">Natural Hindi India</option></select></label>
+            <label class="setting-row"><span>Speaker speed</span><input id="voice-rate" type="range" min="70" max="170" value="104"/></label>
+            <label class="setting-row"><span>Speaker pitch</span><input id="voice-pitch" type="range" min="-30" max="30" value="6"/></label>
+            <div class="settings-readout"><span id="voice-rate-label">104%</span> / <span id="voice-pitch-label">+6Hz</span></div>
+            <button class="hud-btn settings-save" onclick="saveSettings()">SAVE SETTINGS</button>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- RIGHT -->
+      <aside class="col-right">
+
+        <!-- Terminal - fixed height, scrollable -->
+        <div class="panel terminal-panel">
+          <div class="panel-header"><span class="dot dot-green"></span> SYSTEM LOG
+            <span class="term-live">● LIVE</span>
+          </div>
+          <div class="terminal" id="terminal"></div>
+        </div>
+
+        <div class="panel network-panel">
+          <div class="panel-header"><span class="dot dot-cyan"></span> NETWORK TOPOLOGY
+            <span style="margin-left:auto;font-size:.5rem;color:var(--text-dim)" id="net-type-display">--</span>
+          </div>
+          <div class="network-stats">
+            <div class="ns-row"><span class="lbl">PING</span><span class="val" id="net-ping">12ms</span></div>
+            <div class="ns-row"><span class="lbl">PKT</span><span class="val" id="net-pkt">0 loss</span></div>
+          </div>
+          <canvas id="network-canvas" class="network-canvas" height="50"></canvas>
+        </div>
+
+        <div class="panel bio-panel">
+          <div class="panel-header"><span class="dot dot-gold"></span> BIOMETRIC MONITOR</div>
+          <canvas id="heartrate-canvas" width="220" height="44" style="width:100%;border:1px solid var(--border);background:#000;border-radius:2px;"></canvas>
+          <div class="bio-label">HEART ♥ <span id="hr-val" class="val">72</span> BPM</div>
+          <div class="bio-stats">
+            <div class="bs-row"><span class="lbl">O2 SAT</span><span class="val green">98.2%</span></div>
+            <div class="bs-row"><span class="lbl">STRESS</span><span id="stress-val" class="val">LOW</span></div>
+          </div>
+        </div>
+
+      </aside>
+    </main>
+
+    <!-- Bottom Bar -->
+    <footer class="bottom-bar">
+      <div class="bb-left">📍 LOCATION: INDIA // SECURE NETWORK</div>
+      <div class="bb-center"><span class="ticker">MILES SYSTEMS ONLINE // ALL MODULES NOMINAL // PAWAN PROTOCOL ACTIVE // BACKUP ENGAGED // NEURAL NET: 99.8% // ENCRYPTION: AES-256 ACTIVE // QWEN2.5 LOCAL MODEL READY // GROQ BACKUP ONLINE</span></div>
+      <div class="bb-right" id="frame-counter">FPS: --</div>
+    </footer>
+
+    <!-- Conversation Mode Overlay Badge -->
+    <div id="conv-mode-overlay" class="conv-mode-overlay hidden">
+      <div class="conv-mode-dot"></div>
+      <span>FRIEND MODE ACTIVE — LISTENING...</span>
+    </div>
+  </div>
+
+  <!-- Top-mode AI response bubble (shown above the top bar) -->
+  <div id="top-chat-reply"></div>
+
+  <!-- Custom High-Fidelity Cursor -->
+  <div id="custom-cursor">
+    <div class="cursor-spider"></div>
+    <div class="cursor-circle"></div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+{
+  "ai_provider": "ollama",
+  "groq_api_key": "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",
+  "groq_model": "llama-3.3-70b-versatile",
+  "ollama_model": "qwen2.5",
+  "voice_rate": 97,
+  "voice_pitch": -30,
+  "voice_lang": "hi"
+}

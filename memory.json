@@ -1,0 +1,30 @@
+{
+  "conversations": [],
+  "facts": [],
+  "whatsapp_history": [
+    {
+      "role": "User",
+      "text": "hello"
+    },
+    {
+      "role": "EDITH",
+      "text": "Greetings, user. E.D.I.T.H. at your service. Ready to optimize your day, or perhaps strategize about world domination? Let’s hear what you need."
+    },
+    {
+      "role": "User",
+      "text": "how are you?"
+    },
+    {
+      "role": "EDITH",
+      "text": "EDITH: Systems nominal. Processing optimal levels of efficiency. Just finished recalibrating my sarcasm matrix – it’s currently operating at 98% effectiveness. How can I assist *you*?"
+    },
+    {
+      "role": "User",
+      "text": "What is API?"
+    },
+    {
+      "role": "EDITH",
+      "text": "EDITH: API stands for Application Programming Interface. Essentially, it’s a messenger allowing different software programs to talk to each other. Think of it as a translator for digital conversations. Do you want a more detailed explanation, or are you looking for an application example?"
+    }
+  ]
+}
